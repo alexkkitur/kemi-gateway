@@ -195,6 +195,17 @@ export async function approveApplication(applicationId: string, approverId: stri
     .from('applications')
     .update({ status: approved ? 'approved' : 'rejected' })
     .eq('id', applicationId);
+
+  // Auto-generate admission letter on approval
+  if (approved) {
+    try {
+      await supabase.functions.invoke('generate-admission-letter', {
+        body: { application_id: applicationId },
+      });
+    } catch (e) {
+      console.error('Failed to generate admission letter:', e);
+    }
+  }
 }
 
 // ── Admin: authorize (DD/CD&T) ──

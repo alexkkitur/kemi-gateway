@@ -103,3 +103,11 @@ export const roleLabels: Record<UserRole, string> = {
   dd_aec: 'DD/AEC Approver',
   dd_cdt: 'DD/CD&T Authorizer',
 };
+
+// Role path prefixes for route guards
+export const roleRoutePrefixes: Record<UserRole, string[]> = {
+  student: ['/student'],
+  admission_officer: ['/admin'],
+  dd_aec: ['/approver'],
+  dd_cdt: ['/authorizer'],
+};

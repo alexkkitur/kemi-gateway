@@ -119,6 +119,99 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action_type: string
+          admin_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          reason: string | null
+          target_record_id: string
+          target_table: string
+        }
+        Insert: {
+          action_type: string
+          admin_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          reason?: string | null
+          target_record_id: string
+          target_table: string
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          reason?: string | null
+          target_record_id?: string
+          target_table?: string
+        }
+        Relationships: []
+      }
+      certificates: {
+        Row: {
+          application_id: string
+          certificate_number: string
+          course_id: string
+          created_at: string
+          file_url: string | null
+          id: string
+          issued_date: string | null
+          qr_code_url: string | null
+          revoked_at: string | null
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          certificate_number: string
+          course_id: string
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          issued_date?: string | null
+          qr_code_url?: string | null
+          revoked_at?: string | null
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          certificate_number?: string
+          course_id?: string
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          issued_date?: string | null
+          qr_code_url?: string | null
+          revoked_at?: string | null
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           capacity: number
@@ -164,35 +257,89 @@ export type Database = {
         }
         Relationships: []
       }
+      graduations: {
+        Row: {
+          application_id: string
+          completion_status: string
+          course_id: string
+          created_at: string
+          graduation_date: string | null
+          id: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          completion_status?: string
+          course_id: string
+          created_at?: string
+          graduation_date?: string | null
+          id?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          completion_status?: string
+          course_id?: string
+          created_at?: string
+          graduation_date?: string | null
+          id?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "graduations_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "graduations_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           application_id: string
           created_at: string
           id: string
+          payment_reference: string | null
           proof_file_url: string | null
           status: Database["public"]["Enums"]["payment_status"]
           student_id: string
           updated_at: string
+          verification_date: string | null
           verified_by: string | null
         }
         Insert: {
           application_id: string
           created_at?: string
           id?: string
+          payment_reference?: string | null
           proof_file_url?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           student_id: string
           updated_at?: string
+          verification_date?: string | null
           verified_by?: string | null
         }
         Update: {
           application_id?: string
           created_at?: string
           id?: string
+          payment_reference?: string | null
           proof_file_url?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           student_id?: string
           updated_at?: string
+          verification_date?: string | null
           verified_by?: string | null
         }
         Relationships: [

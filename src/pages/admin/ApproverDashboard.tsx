@@ -60,13 +60,13 @@ export default function ApproverDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-2xl font-heading font-bold text-foreground">DD/AEC Approver Dashboard</h1>
+          <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground">DD/AEC Approver Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">Review enrollment lists and approve for admission letter generation</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           <StatsCard title="Pending Approval" value={pendingApproval} icon={Clock} variant="warning" />
           <StatsCard title="Approved" value={approved} icon={BadgeCheck} variant="success" />
           <StatsCard title="Total Reviewed" value={enrolledApps.length} icon={ClipboardList} variant="primary" />
@@ -76,17 +76,17 @@ export default function ApproverDashboard() {
           <CardHeader className="pb-3">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
-                <CardTitle className="font-heading text-lg">Enrollment Lists for Approval</CardTitle>
-                <CardDescription>Review submitted enrollment lists from Admission Officer</CardDescription>
+                <CardTitle className="font-heading text-base sm:text-lg">Enrollment Lists for Approval</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">Review submitted enrollment lists from Admission Officer</CardDescription>
               </div>
               {pendingApps.length > 0 && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   {selectedIds.size > 0 && <span className="text-xs text-muted-foreground font-medium">{selectedIds.size} selected</span>}
-                  <Button size="sm" variant="outline" className="text-success border-success/30 hover:bg-success/10" disabled={selectedIds.size === 0} onClick={() => handleBulkAction('approved')}>
-                    <ListChecks className="h-3.5 w-3.5 mr-1" /> Approve Selected
+                  <Button size="sm" variant="outline" className="text-success border-success/30 hover:bg-success/10 text-xs" disabled={selectedIds.size === 0} onClick={() => handleBulkAction('approved')}>
+                    <ListChecks className="h-3.5 w-3.5 mr-1" /> Approve
                   </Button>
-                  <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10" disabled={selectedIds.size === 0} onClick={() => handleBulkAction('rejected')}>
-                    <XCircle className="h-3.5 w-3.5 mr-1" /> Reject Selected
+                  <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10 text-xs" disabled={selectedIds.size === 0} onClick={() => handleBulkAction('rejected')}>
+                    <XCircle className="h-3.5 w-3.5 mr-1" /> Reject
                   </Button>
                 </div>
               )}
@@ -97,7 +97,36 @@ export default function ApproverDashboard() {
               <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                {/* Mobile card view */}
+                <div className="block sm:hidden space-y-3">
+                  {enrolledApps.map(app => (
+                    <div key={app.id} className={`p-3 rounded-lg border bg-card space-y-2 ${selectedIds.has(app.id) ? 'border-primary/40 bg-primary/5' : ''}`}>
+                      <div className="flex items-start gap-2">
+                        {app.status === 'enrolled' && (
+                          <Checkbox checked={selectedIds.has(app.id)} onCheckedChange={() => toggleSelect(app.id)} className="mt-1" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{app.student_name}</p>
+                          <p className="text-xs text-muted-foreground truncate">{app.course_title}</p>
+                        </div>
+                        <AppStatusBadge status={app.status} />
+                      </div>
+                      {app.status === 'enrolled' && (
+                        <div className="flex gap-2 pl-6">
+                          <Button size="sm" variant="outline" className="flex-1 text-xs text-success border-success/30" onClick={() => handleSingle(app.id, true)}>
+                            <CheckCircle2 className="h-3 w-3 mr-1" /> Approve
+                          </Button>
+                          <Button size="sm" variant="outline" className="flex-1 text-xs text-destructive border-destructive/30" onClick={() => handleSingle(app.id, false)}>
+                            <XCircle className="h-3 w-3 mr-1" /> Reject
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop table */}
+                <div className="hidden sm:block overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -147,11 +176,11 @@ export default function ApproverDashboard() {
                 </div>
                 <div className="mt-4 pt-4 border-t border-border">
                   <div className="flex items-start gap-2">
-                    <MessageSquare className="h-4 w-4 text-muted-foreground mt-2" />
+                    <MessageSquare className="h-4 w-4 text-muted-foreground mt-2 shrink-0" />
                     <div className="flex-1">
                       <Textarea placeholder="Add approval comments..." value={comment} onChange={e => setComment(e.target.value)} className="text-sm" rows={2} />
                       <div className="flex gap-2 mt-2">
-                        <Button size="sm" className="gradient-primary text-primary-foreground" disabled={selectedIds.size === 0} onClick={() => handleBulkAction('approved')}>
+                        <Button size="sm" className="gradient-primary text-primary-foreground text-xs" disabled={selectedIds.size === 0} onClick={() => handleBulkAction('approved')}>
                           <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Approve {selectedIds.size > 0 ? `All ${selectedIds.size}` : 'Selected'}
                         </Button>
                       </div>

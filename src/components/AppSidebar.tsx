@@ -1,6 +1,7 @@
 import {
   LayoutDashboard, BookOpen, FileText, Upload, Bell, User, Users,
-  CheckSquare, ClipboardList, Shield, LogOut, Settings, BadgeCheck, Stamp
+  CheckSquare, ClipboardList, Shield, LogOut, Settings, BadgeCheck, Stamp,
+  GraduationCap, Award, ScrollText, Wrench
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/lib/auth-context';
@@ -19,6 +20,7 @@ const roleLabels: Record<AppRole, string> = {
   admission_officer: 'Admission Officer',
   dd_aec: 'DD/AEC Approver',
   dd_cdt: 'DD/CD&T Authorizer',
+  super_admin: 'Super Admin',
 };
 
 const studentNav = [
@@ -26,6 +28,7 @@ const studentNav = [
   { title: 'Available Courses', url: '/student/courses', icon: BookOpen },
   { title: 'My Applications', url: '/student/applications', icon: FileText },
   { title: 'Documents', url: '/student/documents', icon: Upload },
+  { title: 'Certificates', url: '/student/certificates', icon: Award },
   { title: 'Notifications', url: '/student/notifications', icon: Bell },
   { title: 'Profile', url: '/student/profile', icon: User },
 ];
@@ -34,7 +37,9 @@ const admissionNav = [
   { title: 'Dashboard', url: '/admin/dashboard', icon: LayoutDashboard },
   { title: 'All Applicants', url: '/admin/applicants', icon: Users },
   { title: 'Payment Verification', url: '/admin/payments', icon: CheckSquare },
-  { title: 'Enrollment List', url: '/admin/enrollment', icon: ClipboardList },
+  { title: 'Graduation', url: '/admin/graduation', icon: GraduationCap },
+  { title: 'Certificates', url: '/admin/certificates', icon: Award },
+  { title: 'Audit Logs', url: '/admin/audit-logs', icon: ScrollText },
   { title: 'Settings', url: '/admin/settings', icon: Settings },
 ];
 
@@ -48,8 +53,20 @@ const ddAecNav = [
 const ddCdtNav = [
   { title: 'Dashboard', url: '/authorizer/dashboard', icon: LayoutDashboard },
   { title: 'Authorization Queue', url: '/authorizer/queue', icon: Stamp },
+  { title: 'Graduation', url: '/authorizer/graduation', icon: GraduationCap },
   { title: 'Training Batches', url: '/authorizer/batches', icon: ClipboardList },
   { title: 'Settings', url: '/authorizer/settings', icon: Settings },
+];
+
+const superAdminNav = [
+  { title: 'Dashboard', url: '/admin/dashboard', icon: LayoutDashboard },
+  { title: 'All Applicants', url: '/admin/applicants', icon: Users },
+  { title: 'Payment Verification', url: '/admin/payments', icon: CheckSquare },
+  { title: 'Graduation', url: '/admin/graduation', icon: GraduationCap },
+  { title: 'Certificates', url: '/admin/certificates', icon: Award },
+  { title: 'Admin Overrides', url: '/admin/overrides', icon: Wrench },
+  { title: 'Audit Logs', url: '/admin/audit-logs', icon: ScrollText },
+  { title: 'Settings', url: '/admin/settings', icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -64,6 +81,7 @@ export function AppSidebar() {
     admission_officer: admissionNav,
     dd_aec: ddAecNav,
     dd_cdt: ddCdtNav,
+    super_admin: superAdminNav,
   };
   const navItems = navMap[user.role];
 

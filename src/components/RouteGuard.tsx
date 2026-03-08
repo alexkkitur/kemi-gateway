@@ -10,6 +10,7 @@ const roleRoutePrefixes: Record<AppRole, string> = {
   admission_officer: '/admin',
   dd_aec: '/approver',
   dd_cdt: '/authorizer',
+  super_admin: '/admin',
 };
 
 interface RouteGuardProps {

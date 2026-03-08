@@ -7,15 +7,18 @@ const statusStyles: Record<ApplicationStatus, string> = {
   approved: 'bg-success/10 text-success border-success/20',
   rejected: 'bg-destructive/10 text-destructive border-destructive/20',
   authorized: 'bg-success/10 text-success border-success/20',
+  training_completed: 'bg-primary/10 text-primary border-primary/20',
+  graduated: 'bg-success/10 text-success border-success/20',
 };
 
-// Student-facing styles (simplified — no "enrolled" distinction)
 const studentStatusStyles: Record<ApplicationStatus, string> = {
   pending_verification: 'bg-warning/10 text-warning border-warning/20',
   enrolled: 'bg-warning/10 text-warning border-warning/20',
   approved: 'bg-success/10 text-success border-success/20',
   rejected: 'bg-destructive/10 text-destructive border-destructive/20',
   authorized: 'bg-success/10 text-success border-success/20',
+  training_completed: 'bg-primary/10 text-primary border-primary/20',
+  graduated: 'bg-success/10 text-success border-success/20',
 };
 
 const paymentStyles: Record<PaymentStatus, string> = {

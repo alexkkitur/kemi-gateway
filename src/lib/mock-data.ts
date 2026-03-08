@@ -1,4 +1,4 @@
-export type UserRole = 'student' | 'admission_officer' | 'dd_aec' | 'dd_cdt';
+export type UserRole = 'student' | 'admission_officer' | 'dd_aec' | 'dd_cdt' | 'super_admin';
 
 export interface User {
   id: string;
@@ -20,7 +20,7 @@ export interface Course {
   category: string;
 }
 
-export type ApplicationStatus = 'pending_verification' | 'enrolled' | 'approved' | 'rejected' | 'authorized';
+export type ApplicationStatus = 'pending_verification' | 'enrolled' | 'approved' | 'rejected' | 'authorized' | 'training_completed' | 'graduated';
 export type PaymentStatus = 'pending' | 'submitted' | 'verified' | 'rejected';
 
 export interface Application {
@@ -79,15 +79,19 @@ export const statusLabels: Record<ApplicationStatus, string> = {
   approved: 'Approved',
   rejected: 'Rejected',
   authorized: 'Authorized',
+  training_completed: 'Training Completed',
+  graduated: 'Graduated',
 };
 
-// Simplified labels (student-facing) — hides internal workflow details
+// Simplified labels (student-facing)
 export const studentStatusLabels: Record<ApplicationStatus, string> = {
   pending_verification: 'Under Review',
   enrolled: 'Under Review',
   approved: 'Approved',
   rejected: 'Rejected',
   authorized: 'Approved',
+  training_completed: 'Training Completed',
+  graduated: 'Graduated',
 };
 
 export const paymentStatusLabels: Record<PaymentStatus, string> = {
@@ -102,12 +106,13 @@ export const roleLabels: Record<UserRole, string> = {
   admission_officer: 'Admission Officer',
   dd_aec: 'DD/AEC Approver',
   dd_cdt: 'DD/CD&T Authorizer',
+  super_admin: 'Super Admin',
 };
 
-// Role path prefixes for route guards
 export const roleRoutePrefixes: Record<UserRole, string[]> = {
   student: ['/student'],
   admission_officer: ['/admin'],
   dd_aec: ['/approver'],
   dd_cdt: ['/authorizer'],
+  super_admin: ['/admin'],
 };

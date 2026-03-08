@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { RouteGuard } from "@/components/RouteGuard";
+import { Loader2 } from "lucide-react";
 import LoginPage from "./pages/LoginPage";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import CoursesPage from "./pages/student/CoursesPage";
@@ -21,7 +22,18 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-sm text-muted-foreground">Loading KEMI Portal...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -42,7 +54,6 @@ function AppRoutes() {
         } replace />
       } />
 
-      {/* Student Routes — protected */}
       <Route path="/student/dashboard" element={<RouteGuard allowedRoles={['student']}><StudentDashboard /></RouteGuard>} />
       <Route path="/student/courses" element={<RouteGuard allowedRoles={['student']}><CoursesPage /></RouteGuard>} />
       <Route path="/student/applications" element={<RouteGuard allowedRoles={['student']}><ApplicationsPage /></RouteGuard>} />
@@ -50,20 +61,17 @@ function AppRoutes() {
       <Route path="/student/notifications" element={<RouteGuard allowedRoles={['student']}><NotificationsPage /></RouteGuard>} />
       <Route path="/student/profile" element={<RouteGuard allowedRoles={['student']}><ProfilePage /></RouteGuard>} />
 
-      {/* Admin Routes — Admission Officer only */}
       <Route path="/admin/dashboard" element={<RouteGuard allowedRoles={['admission_officer']}><AdminDashboard /></RouteGuard>} />
       <Route path="/admin/applicants" element={<RouteGuard allowedRoles={['admission_officer']}><AdminDashboard /></RouteGuard>} />
       <Route path="/admin/payments" element={<RouteGuard allowedRoles={['admission_officer']}><PlaceholderPage title="Payment Verification" /></RouteGuard>} />
       <Route path="/admin/enrollment" element={<RouteGuard allowedRoles={['admission_officer']}><PlaceholderPage title="Enrollment List" /></RouteGuard>} />
       <Route path="/admin/settings" element={<RouteGuard allowedRoles={['admission_officer']}><PlaceholderPage title="Settings" /></RouteGuard>} />
 
-      {/* Approver Routes — DD/AEC only */}
       <Route path="/approver/dashboard" element={<RouteGuard allowedRoles={['dd_aec']}><ApproverDashboard /></RouteGuard>} />
       <Route path="/approver/queue" element={<RouteGuard allowedRoles={['dd_aec']}><ApproverDashboard /></RouteGuard>} />
       <Route path="/approver/approved" element={<RouteGuard allowedRoles={['dd_aec']}><PlaceholderPage title="Approved Lists" /></RouteGuard>} />
       <Route path="/approver/settings" element={<RouteGuard allowedRoles={['dd_aec']}><PlaceholderPage title="Settings" /></RouteGuard>} />
 
-      {/* Authorizer Routes — DD/CD&T only */}
       <Route path="/authorizer/dashboard" element={<RouteGuard allowedRoles={['dd_cdt']}><AuthorizerDashboard /></RouteGuard>} />
       <Route path="/authorizer/queue" element={<RouteGuard allowedRoles={['dd_cdt']}><AuthorizerDashboard /></RouteGuard>} />
       <Route path="/authorizer/batches" element={<RouteGuard allowedRoles={['dd_cdt']}><PlaceholderPage title="Training Batches" /></RouteGuard>} />

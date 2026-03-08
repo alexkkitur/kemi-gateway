@@ -4,13 +4,22 @@ import {
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/lib/auth-context';
-import { roleLabels } from '@/lib/mock-data';
 import kemiLogo from '@/assets/kemi-logo.png';
+import type { Database } from '@/integrations/supabase/types';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
   SidebarFooter, SidebarHeader, useSidebar,
 } from '@/components/ui/sidebar';
+
+type AppRole = Database['public']['Enums']['app_role'];
+
+const roleLabels: Record<AppRole, string> = {
+  student: 'Student',
+  admission_officer: 'Admission Officer',
+  dd_aec: 'DD/AEC Approver',
+  dd_cdt: 'DD/CD&T Authorizer',
+};
 
 const studentNav = [
   { title: 'Dashboard', url: '/student/dashboard', icon: LayoutDashboard },
@@ -50,7 +59,7 @@ export function AppSidebar() {
 
   if (!user) return null;
 
-  const navMap = {
+  const navMap: Record<AppRole, typeof studentNav> = {
     student: studentNav,
     admission_officer: admissionNav,
     dd_aec: ddAecNav,

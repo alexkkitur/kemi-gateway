@@ -27,16 +27,16 @@ const iconStyles = {
 export function StatsCard({ title, value, subtitle, icon: Icon, trend, variant = 'default' }: StatsCardProps) {
   return (
     <Card className={`${variantStyles[variant]} shadow-card animate-fade-in border`}>
-      <CardContent className="p-5">
+      <CardContent className="p-3 sm:p-5">
         <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold font-heading text-foreground">{value}</p>
-            {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
-            {trend && <p className="text-xs text-success font-medium">{trend}</p>}
+          <div className="space-y-0.5 sm:space-y-1 min-w-0">
+            <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
+            <p className="text-lg sm:text-2xl font-bold font-heading text-foreground">{value}</p>
+            {subtitle && <p className="text-[10px] sm:text-xs text-muted-foreground">{subtitle}</p>}
+            {trend && <p className="text-[10px] sm:text-xs text-success font-medium">{trend}</p>}
           </div>
-          <div className={`p-2.5 rounded-lg ${iconStyles[variant]}`}>
-            <Icon className="h-5 w-5" />
+          <div className={`p-1.5 sm:p-2.5 rounded-lg ${iconStyles[variant]} shrink-0`}>
+            <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
         </div>
       </CardContent>

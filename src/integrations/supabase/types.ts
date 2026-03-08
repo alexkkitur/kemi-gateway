@@ -14,16 +14,277 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admission_letters: {
+        Row: {
+          application_id: string
+          file_url: string
+          generated_at: string
+          id: string
+        }
+        Insert: {
+          application_id: string
+          file_url: string
+          generated_at?: string
+          id?: string
+        }
+        Update: {
+          application_id?: string
+          file_url?: string
+          generated_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admission_letters_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applications: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          status: Database["public"]["Enums"]["application_status"]
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          status?: Database["public"]["Enums"]["application_status"]
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          status?: Database["public"]["Enums"]["application_status"]
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      approvals: {
+        Row: {
+          application_id: string
+          approver_id: string
+          approver_role: Database["public"]["Enums"]["app_role"]
+          comment: string | null
+          created_at: string
+          id: string
+          status: string
+        }
+        Insert: {
+          application_id: string
+          approver_id: string
+          approver_role: Database["public"]["Enums"]["app_role"]
+          comment?: string | null
+          created_at?: string
+          id?: string
+          status: string
+        }
+        Update: {
+          application_id?: string
+          approver_id?: string
+          approver_role?: Database["public"]["Enums"]["app_role"]
+          comment?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approvals_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          capacity: number
+          category: string | null
+          created_at: string
+          description: string | null
+          duration: string
+          enrolled_count: number
+          fee: number
+          id: string
+          is_active: boolean
+          start_date: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          duration: string
+          enrolled_count?: number
+          fee?: number
+          id?: string
+          is_active?: boolean
+          start_date?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string
+          enrolled_count?: number
+          fee?: number
+          id?: string
+          is_active?: boolean
+          start_date?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          proof_file_url: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          student_id: string
+          updated_at: string
+          verified_by: string | null
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          proof_file_url?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          student_id: string
+          updated_at?: string
+          verified_by?: string | null
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          proof_file_url?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          student_id?: string
+          updated_at?: string
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          id_number: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          id_number?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          id_number?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "student" | "admission_officer" | "dd_aec" | "dd_cdt"
+      application_status:
+        | "pending_verification"
+        | "enrolled"
+        | "approved"
+        | "rejected"
+        | "authorized"
+      payment_status: "pending" | "submitted" | "verified" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +411,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["student", "admission_officer", "dd_aec", "dd_cdt"],
+      application_status: [
+        "pending_verification",
+        "enrolled",
+        "approved",
+        "rejected",
+        "authorized",
+      ],
+      payment_status: ["pending", "submitted", "verified", "rejected"],
+    },
   },
 } as const

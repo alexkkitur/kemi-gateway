@@ -49,7 +49,7 @@ export default function StudentDashboard() {
                       <p className="text-xs text-muted-foreground mt-0.5">Applied: {app.createdAt}</p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <AppStatusBadge status={app.status} />
+                      <AppStatusBadge status={app.status} studentFacing />
                       {app.admissionLetter && (
                         <Button variant="ghost" size="icon" className="h-7 w-7 text-primary">
                           <Download className="h-3.5 w-3.5" />

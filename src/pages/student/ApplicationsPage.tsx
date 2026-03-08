@@ -43,7 +43,7 @@ export default function ApplicationsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{app.createdAt}</TableCell>
-                      <TableCell><AppStatusBadge status={app.status} /></TableCell>
+                      <TableCell><AppStatusBadge status={app.status} studentFacing /></TableCell>
                       <TableCell><PaymentStatusBadge status={app.paymentStatus} /></TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">

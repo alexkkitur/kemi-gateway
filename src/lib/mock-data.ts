@@ -72,12 +72,22 @@ export const mockApplications: Application[] = [
   { id: 'a7', studentId: '10', studentName: 'Samuel Kipchoge', studentEmail: 'samuel@student.ke', courseId: 'c6', courseTitle: 'Human Resource Management in Education', status: 'authorized', paymentStatus: 'verified', createdAt: '2026-02-25', admissionLetter: '/admission-letter.pdf' },
 ];
 
+// Internal labels (admin-facing)
 export const statusLabels: Record<ApplicationStatus, string> = {
   pending_verification: 'Pending Verification',
   enrolled: 'Enrolled',
   approved: 'Approved',
   rejected: 'Rejected',
   authorized: 'Authorized',
+};
+
+// Simplified labels (student-facing) — hides internal workflow details
+export const studentStatusLabels: Record<ApplicationStatus, string> = {
+  pending_verification: 'Under Review',
+  enrolled: 'Under Review',
+  approved: 'Approved',
+  rejected: 'Rejected',
+  authorized: 'Approved',
 };
 
 export const paymentStatusLabels: Record<PaymentStatus, string> = {
@@ -92,4 +102,12 @@ export const roleLabels: Record<UserRole, string> = {
   admission_officer: 'Admission Officer',
   dd_aec: 'DD/AEC Approver',
   dd_cdt: 'DD/CD&T Authorizer',
+};
+
+// Role path prefixes for route guards
+export const roleRoutePrefixes: Record<UserRole, string[]> = {
+  student: ['/student'],
+  admission_officer: ['/admin'],
+  dd_aec: ['/approver'],
+  dd_cdt: ['/authorizer'],
 };

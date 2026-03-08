@@ -277,13 +277,20 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "student" | "admission_officer" | "dd_aec" | "dd_cdt"
+      app_role:
+        | "student"
+        | "admission_officer"
+        | "dd_aec"
+        | "dd_cdt"
+        | "super_admin"
       application_status:
         | "pending_verification"
         | "enrolled"
         | "approved"
         | "rejected"
         | "authorized"
+        | "training_completed"
+        | "graduated"
       payment_status: "pending" | "submitted" | "verified" | "rejected"
     }
     CompositeTypes: {
@@ -412,13 +419,21 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["student", "admission_officer", "dd_aec", "dd_cdt"],
+      app_role: [
+        "student",
+        "admission_officer",
+        "dd_aec",
+        "dd_cdt",
+        "super_admin",
+      ],
       application_status: [
         "pending_verification",
         "enrolled",
         "approved",
         "rejected",
         "authorized",
+        "training_completed",
+        "graduated",
       ],
       payment_status: ["pending", "submitted", "verified", "rejected"],
     },

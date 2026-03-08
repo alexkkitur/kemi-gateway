@@ -1,44 +1,69 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth-context';
-import { UserRole, roleLabels } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GraduationCap, Shield, BadgeCheck, Stamp, User } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { GraduationCap, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import kemiLogo from '@/assets/kemi-logo.png';
 
-const roleIcons: Record<UserRole, typeof User> = {
-  student: GraduationCap,
-  admission_officer: Shield,
-  dd_aec: BadgeCheck,
-  dd_cdt: Stamp,
-};
-
-const roleDescriptions: Record<UserRole, string> = {
-  student: 'Access courses, track applications & download documents',
-  admission_officer: 'Verify payments & manage enrollments',
-  dd_aec: 'Review and approve enrollment lists',
-  dd_cdt: 'Authorize training commencement',
-};
-
-const rolePaths: Record<UserRole, string> = {
-  student: '/student/dashboard',
-  admission_officer: '/admin/dashboard',
-  dd_aec: '/approver/dashboard',
-  dd_cdt: '/authorizer/dashboard',
-};
-
 export default function LoginPage() {
-  const { loginAs } = useAuth();
+  const { login, signup } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleQuickLogin = (role: UserRole) => {
-    loginAs(role);
-    navigate(rolePaths[role]);
+  // Login state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+
+  // Signup state
+  const [signupName, setSignupName] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupConfirm, setSignupConfirm] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail || !loginPassword) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    setLoading(true);
+    const error = await login(loginEmail, loginPassword);
+    setLoading(false);
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success('Welcome back!');
+      navigate('/');
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!signupName || !signupEmail || !signupPassword) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    if (signupPassword !== signupConfirm) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    if (signupPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    setLoading(true);
+    const error = await signup(signupEmail, signupPassword, signupName);
+    setLoading(false);
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success('Account created! Please check your email to verify your account.');
+    }
   };
 
   return (
@@ -56,74 +81,71 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Login */}
+      {/* Auth Form */}
       <div className="flex-1 -mt-8 px-6 pb-12">
-        <div className="max-w-5xl mx-auto">
-          {/* Quick Login Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-            {(Object.keys(roleLabels) as UserRole[]).map((role) => {
-              const Icon = roleIcons[role];
-              return (
-                <Card
-                  key={role}
-                  className="cursor-pointer shadow-elevated hover:shadow-lg transition-all hover:-translate-y-1 border-0 animate-fade-in group"
-                  onClick={() => handleQuickLogin(role)}
-                >
-                  <CardContent className="p-5 text-center">
-                    <div className="mx-auto w-12 h-12 rounded-xl gradient-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <Icon className="h-6 w-6 text-primary-foreground" />
-                    </div>
-                    <h3 className="font-heading font-semibold text-sm text-foreground mb-1">
-                      {roleLabels[role]}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {roleDescriptions[role]}
-                    </p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+        <div className="max-w-md mx-auto">
+          <Card className="shadow-elevated border-0 animate-fade-in">
+            <Tabs defaultValue="login">
+              <CardHeader className="text-center pb-2">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="login">Sign In</TabsTrigger>
+                  <TabsTrigger value="signup">Create Account</TabsTrigger>
+                </TabsList>
+              </CardHeader>
 
-          {/* Login Form */}
-          <Card className="max-w-md mx-auto shadow-elevated border-0">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="font-heading text-xl">Sign In</CardTitle>
-              <CardDescription>Enter your credentials to access the portal</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@kemi.go.ke"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <Button className="w-full gradient-primary text-primary-foreground font-semibold h-11">
-                Sign In
-              </Button>
-              <p className="text-center text-xs text-muted-foreground">
-                Use the quick-login cards above to demo different roles
-              </p>
-            </CardContent>
+              <TabsContent value="login">
+                <form onSubmit={handleLogin}>
+                  <CardContent className="space-y-4">
+                    <CardDescription className="text-center">Enter your credentials to access the portal</CardDescription>
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">Email Address</Label>
+                      <Input id="login-email" type="email" placeholder="your.email@kemi.go.ke" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password">Password</Label>
+                      <Input id="login-password" type="password" placeholder="••••••••" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
+                    </div>
+                    <Button type="submit" className="w-full gradient-primary text-primary-foreground font-semibold h-11" disabled={loading}>
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                      Sign In
+                    </Button>
+                  </CardContent>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="signup">
+                <form onSubmit={handleSignup}>
+                  <CardContent className="space-y-4">
+                    <CardDescription className="text-center">Register as a new student trainee</CardDescription>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-name">Full Name</Label>
+                      <Input id="signup-name" placeholder="John Kamau" value={signupName} onChange={e => setSignupName(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email Address</Label>
+                      <Input id="signup-email" type="email" placeholder="your.email@example.com" value={signupEmail} onChange={e => setSignupEmail(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Password</Label>
+                      <Input id="signup-password" type="password" placeholder="Min. 6 characters" value={signupPassword} onChange={e => setSignupPassword(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-confirm">Confirm Password</Label>
+                      <Input id="signup-confirm" type="password" placeholder="••••••••" value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} />
+                    </div>
+                    <Button type="submit" className="w-full gradient-primary text-primary-foreground font-semibold h-11" disabled={loading}>
+                      {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                      <GraduationCap className="h-4 w-4 mr-2" />
+                      Create Student Account
+                    </Button>
+                  </CardContent>
+                </form>
+              </TabsContent>
+            </Tabs>
           </Card>
         </div>
       </div>
 
-      {/* Footer */}
       <footer className="py-4 text-center text-xs text-muted-foreground border-t border-border bg-card">
         © 2026 Kenya Education Management Institute. All rights reserved.
       </footer>

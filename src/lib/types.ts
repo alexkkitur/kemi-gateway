@@ -1,6 +1,6 @@
 // Shared frontend types — mirrors Laravel API response shapes.
 
-export type AppRole = 'student' | 'admin' | 'dd_aec' | 'dd_cdt' | 'super_admin';
+export type AppRole = 'student' | 'admission_officer' | 'dd_aec' | 'dd_cdt' | 'super_admin';
 
 export type ApplicationStatus =
   | 'pending_verification'
@@ -11,7 +11,7 @@ export type ApplicationStatus =
   | 'training_completed'
   | 'graduated';
 
-export type PaymentStatus = 'not_submitted' | 'submitted' | 'verified' | 'rejected';
+export type PaymentStatus = 'not_submitted' | 'pending' | 'submitted' | 'verified' | 'rejected';
 
 export interface Course {
   id: string;
@@ -22,6 +22,7 @@ export interface Course {
   level: string | null;
   category: string | null;
   capacity: number | null;
+  enrolled_count?: number;
   fee: string | number;
   start_date: string | null;
   end_date: string | null;

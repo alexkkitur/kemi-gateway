@@ -22,6 +22,7 @@ const studentStatusStyles: Record<ApplicationStatus, string> = {
 };
 
 const paymentStyles: Record<PaymentStatus, string> = {
+  not_submitted: 'bg-muted text-muted-foreground border-border',
   pending: 'bg-muted text-muted-foreground border-border',
   submitted: 'bg-warning/10 text-warning border-warning/20',
   verified: 'bg-success/10 text-success border-success/20',

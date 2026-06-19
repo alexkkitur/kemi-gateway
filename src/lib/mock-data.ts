@@ -21,7 +21,7 @@ export interface Course {
 }
 
 export type ApplicationStatus = 'pending_verification' | 'enrolled' | 'approved' | 'rejected' | 'authorized' | 'training_completed' | 'graduated';
-export type PaymentStatus = 'pending' | 'submitted' | 'verified' | 'rejected';
+export type PaymentStatus = 'not_submitted' | 'pending' | 'submitted' | 'verified' | 'rejected';
 
 export interface Application {
   id: string;
@@ -95,6 +95,7 @@ export const studentStatusLabels: Record<ApplicationStatus, string> = {
 };
 
 export const paymentStatusLabels: Record<PaymentStatus, string> = {
+  not_submitted: 'Not Submitted',
   pending: 'Pending',
   submitted: 'Submitted',
   verified: 'Verified',

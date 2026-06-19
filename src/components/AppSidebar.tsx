@@ -6,7 +6,7 @@ import {
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/lib/auth-context';
 import kemiLogo from '@/assets/kemi-logo.png';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database } from '@/lib/types';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,

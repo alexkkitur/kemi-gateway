@@ -1,4 +1,0 @@
-project_id = "bseoxmndzrgdbgqfwoxi"
-
-[functions.generate-admission-letter]
-verify_jwt = false

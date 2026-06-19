@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth-context';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database } from '@/lib/types';
 
 type AppRole = Database['public']['Enums']['app_role'];
 

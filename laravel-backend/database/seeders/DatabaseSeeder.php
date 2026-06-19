@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         // Admin accounts (one per role)
         $accounts = [
             ['Super Admin',  'superadmin@kemi.local', 'super_admin'],
-            ['Admin Officer','admin@kemi.local',      'admin'],
+            ['Admission Officer','admin@kemi.local',   'admission_officer'],
             ['DD AEC',       'ddaec@kemi.local',      'dd_aec'],
             ['DD CD&T',      'ddcdt@kemi.local',      'dd_cdt'],
             ['Test Student', 'student@kemi.local',    'student'],

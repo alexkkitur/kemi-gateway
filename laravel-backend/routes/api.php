@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('certificates/{certificate}/download',     [CertificateController::class, 'download']);
 
     // ============= Admin / Approver / Authorizer / Super Admin =============
-    Route::middleware('role:admin,dd_aec,dd_cdt,super_admin')->group(function () {
+    Route::middleware('role:admission_officer,dd_aec,dd_cdt,super_admin')->group(function () {
         Route::get('applications', [ApplicationController::class, 'index']);
         Route::get('audit-logs',   [AuditLogController::class, 'index']);
         Route::get('graduations',  [GraduationController::class, 'index']);
@@ -49,7 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Payment verification (admin)
-    Route::middleware('role:admin,super_admin')->group(function () {
+    Route::middleware('role:admission_officer,super_admin')->group(function () {
         Route::post('applications/{application}/verify-payment', [ApplicationController::class, 'verifyPayment']);
     });
 
@@ -64,7 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Training lifecycle + certificates (admin)
-    Route::middleware('role:admin,super_admin')->group(function () {
+    Route::middleware('role:admission_officer,super_admin')->group(function () {
         Route::post('applications/{application}/complete-training', [ApplicationController::class, 'completeTraining']);
         Route::post('applications/{application}/graduate',          [ApplicationController::class, 'graduate']);
         Route::post('certificates',                                 [CertificateController::class, 'store']);

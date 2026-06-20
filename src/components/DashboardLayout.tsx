@@ -34,6 +34,10 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
           <main className="flex-1 p-3 sm:p-6 overflow-auto">
             {children}
           </main>
+          <footer className="border-t border-border bg-card/80 px-3 sm:px-6 py-3 text-[11px] text-muted-foreground flex items-center justify-between shrink-0">
+            <span>&copy; {new Date().getFullYear()} KEMI. All rights reserved.</span>
+            <span className="hidden sm:inline">Kenya Education Management Institute</span>
+          </footer>
         </div>
       </div>
     </SidebarProvider>

@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CertificateController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\ExamCardController;
+use App\Http\Controllers\Api\FeeController;
 use App\Http\Controllers\Api\GraduationController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -15,7 +17,7 @@ Route::prefix('auth')->group(function () {
     Route::post('login',  [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('me',     [AuthController::class, 'me']);
+        Route::get('me',      [AuthController::class, 'me']);
         Route::post('logout', [AuthController::class, 'logout']);
     });
 });
@@ -33,14 +35,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('applications',   [ApplicationController::class, 'store']);
     Route::post('applications/{application}/payment-proof', [ApplicationController::class, 'uploadPaymentProof']);
 
-    // Student certificates
+    // Fee catalogue & invoices
+    Route::get('fee-items',                                    [FeeController::class, 'items']);
+    Route::post('applications/{application}/fee-invoice',      [FeeController::class, 'invoice']);
+    Route::get('applications/{application}/fee-invoice',       [FeeController::class, 'show']);
+
+    // Exam cards
+    Route::get('applications/{application}/exam-card',         [ExamCardController::class, 'show']);
+    Route::post('applications/{application}/exam-card',        [ExamCardController::class, 'request']);
+    Route::get('exam-cards/me',                                [ExamCardController::class, 'mine']);
+    Route::post('exam-cards/{examCard}/issue',                 [ExamCardController::class, 'issue'])->middleware('role:admission_officer,super_admin');
+    Route::get('exam-cards',                                   [ExamCardController::class, 'index'])->middleware('role:admission_officer,dd_aec,dd_cdt,super_admin');
+
+    // Student certificates & documents
     Route::get('certificates/me', [CertificateController::class, 'mine']);
 
-    // Admission letter download (student or admin)
+    // Admission letter download
     Route::get('admission-letters/{application}/download', [AdmissionLetterController::class, 'download']);
-    Route::get('certificates/{certificate}/download',     [CertificateController::class, 'download']);
+    Route::get('certificates/{certificate}/download',      [CertificateController::class, 'download']);
 
-    // ============= Admin / Approver / Authorizer / Super Admin =============
+    // ===== Admin / Approver / Authorizer / Super Admin =====
     Route::middleware('role:admission_officer,dd_aec,dd_cdt,super_admin')->group(function () {
         Route::get('applications', [ApplicationController::class, 'index']);
         Route::get('audit-logs',   [AuditLogController::class, 'index']);
@@ -48,30 +62,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('certificates', [CertificateController::class, 'index']);
     });
 
-    // Payment verification (admin)
     Route::middleware('role:admission_officer,super_admin')->group(function () {
-        Route::post('applications/{application}/verify-payment', [ApplicationController::class, 'verifyPayment']);
-    });
-
-    // Approval (DD/AEC)
-    Route::middleware('role:dd_aec,super_admin')->group(function () {
-        Route::post('applications/{application}/approve', [ApplicationController::class, 'approve']);
-    });
-
-    // Authorization (DD/CD&T)
-    Route::middleware('role:dd_cdt,super_admin')->group(function () {
-        Route::post('applications/{application}/authorize', [ApplicationController::class, 'authorize']);
-    });
-
-    // Training lifecycle + certificates (admin)
-    Route::middleware('role:admission_officer,super_admin')->group(function () {
+        Route::post('applications/{application}/verify-payment',    [ApplicationController::class, 'verifyPayment']);
         Route::post('applications/{application}/complete-training', [ApplicationController::class, 'completeTraining']);
         Route::post('applications/{application}/graduate',          [ApplicationController::class, 'graduate']);
         Route::post('certificates',                                 [CertificateController::class, 'store']);
         Route::post('certificates/{certificate}/revoke',            [CertificateController::class, 'revoke']);
     });
 
-    // Super admin overrides
+    Route::middleware('role:dd_aec,super_admin')->group(function () {
+        Route::post('applications/{application}/approve', [ApplicationController::class, 'approve']);
+    });
+
+    Route::middleware('role:dd_cdt,super_admin')->group(function () {
+        Route::post('applications/{application}/authorize', [ApplicationController::class, 'authorize']);
+    });
+
     Route::middleware('role:super_admin')->group(function () {
         Route::post('applications/{application}/override-status',  [ApplicationController::class, 'overrideStatus']);
         Route::post('applications/{application}/override-payment', [ApplicationController::class, 'overridePayment']);

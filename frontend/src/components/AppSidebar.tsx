@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, BookOpen, FileText, Upload, Bell, User, Users,
   CheckSquare, ClipboardList, Shield, LogOut, Settings, BadgeCheck, Stamp,
-  GraduationCap, Award, ScrollText, Wrench
+  GraduationCap, Award, ScrollText, Wrench, CreditCard
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/lib/auth-context';
@@ -24,13 +24,15 @@ const roleLabels: Record<AppRole, string> = {
 };
 
 const studentNav = [
-  { title: 'Dashboard', url: '/student/dashboard', icon: LayoutDashboard },
-  { title: 'Available Courses', url: '/student/courses', icon: BookOpen },
-  { title: 'My Applications', url: '/student/applications', icon: FileText },
-  { title: 'Documents', url: '/student/documents', icon: Upload },
-  { title: 'Certificates', url: '/student/certificates', icon: Award },
-  { title: 'Notifications', url: '/student/notifications', icon: Bell },
-  { title: 'Profile', url: '/student/profile', icon: User },
+  { title: 'Dashboard',        url: '/student/dashboard',    icon: LayoutDashboard },
+  { title: 'Available Courses',url: '/student/courses',      icon: BookOpen },
+  { title: 'My Applications',  url: '/student/applications', icon: FileText },
+  { title: 'Fees & Payments',  url: '/student/fees',         icon: CreditCard },
+  { title: 'Transcripts',      url: '/student/transcripts',  icon: ScrollText },
+  { title: 'Documents',        url: '/student/documents',    icon: Upload },
+  { title: 'Certificates',     url: '/student/certificates', icon: Award },
+  { title: 'Notifications',    url: '/student/notifications',icon: Bell },
+  { title: 'Profile',          url: '/student/profile',      icon: User },
 ];
 
 const admissionNav = [

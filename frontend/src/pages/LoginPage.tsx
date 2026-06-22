@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { GraduationCap, Loader2 } from 'lucide-react';
+import { GraduationCap, Loader2, IdCard } from 'lucide-react';
 import { toast } from 'sonner';
 import kemiLogo from '@/assets/kemi-logo.png';
 
@@ -15,11 +15,9 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Login state
-  const [loginEmail, setLoginEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  // Signup state
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
@@ -27,12 +25,9 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) {
-      toast.error('Please fill in all fields');
-      return;
-    }
+    if (!identifier || !loginPassword) { toast.error('Please fill in all fields'); return; }
     setLoading(true);
-    const error = await login(loginEmail, loginPassword);
+    const error = await login(identifier, loginPassword);
     setLoading(false);
     if (error) {
       toast.error(error);
@@ -44,44 +39,34 @@ export default function LoginPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signupName || !signupEmail || !signupPassword) {
-      toast.error('Please fill in all fields');
-      return;
-    }
-    if (signupPassword !== signupConfirm) {
-      toast.error('Passwords do not match');
-      return;
-    }
-    if (signupPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
-    }
+    if (!signupName || !signupEmail || !signupPassword) { toast.error('Please fill in all fields'); return; }
+    if (signupPassword !== signupConfirm) { toast.error('Passwords do not match'); return; }
+    if (signupPassword.length < 6) { toast.error('Password must be at least 6 characters'); return; }
     setLoading(true);
     const error = await signup(signupEmail, signupPassword, signupName);
     setLoading(false);
     if (error) {
       toast.error(error);
     } else {
-      toast.success('Account created! Please check your email to verify your account.');
+      toast.success('Account created! Complete your profile to continue.');
+      navigate('/');
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero */}
       <div className="gradient-hero text-primary-foreground py-16 px-6">
         <div className="max-w-5xl mx-auto text-center">
           <img src={kemiLogo} alt="KEMI Logo" className="h-20 mx-auto mb-6 bg-primary-foreground/90 rounded-lg px-4 py-2" />
           <h1 className="text-3xl md:text-4xl font-heading font-bold mb-3">
-            Training Enrollment & Student Portal
+            Training Enrollment &amp; Student Portal
           </h1>
           <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">
-            Kenya Education Management Institute — Digitized Registration, Admission, Approval & Student Engagement System
+            Kenya Education Management Institute — Digitized Registration, Admission, Approval &amp; Student Engagement System
           </p>
         </div>
       </div>
 
-      {/* Auth Form */}
       <div className="flex-1 -mt-8 px-6 pb-12">
         <div className="max-w-md mx-auto">
           <Card className="shadow-elevated border-0 animate-fade-in">
@@ -96,14 +81,32 @@ export default function LoginPage() {
               <TabsContent value="login">
                 <form onSubmit={handleLogin}>
                   <CardContent className="space-y-4">
-                    <CardDescription className="text-center">Enter your credentials to access the portal</CardDescription>
+                    <CardDescription className="text-center">
+                      Sign in with your TSC No., DELM No. or email address
+                    </CardDescription>
                     <div className="space-y-2">
-                      <Label htmlFor="login-email">Email Address</Label>
-                      <Input id="login-email" type="email" placeholder="your.email@kemi.go.ke" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
+                      <Label htmlFor="identifier" className="flex items-center gap-1.5">
+                        <IdCard className="h-3.5 w-3.5" />
+                        TSC No. / DELM No. / Email
+                      </Label>
+                      <Input
+                        id="identifier"
+                        placeholder="e.g. TSC/0001/2024 or your@email.com"
+                        value={identifier}
+                        onChange={e => setIdentifier(e.target.value)}
+                        autoComplete="username"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="login-password">Password</Label>
-                      <Input id="login-password" type="password" placeholder="••••••••" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
+                      <Input
+                        id="login-password"
+                        type="password"
+                        placeholder="••••••••"
+                        value={loginPassword}
+                        onChange={e => setLoginPassword(e.target.value)}
+                        autoComplete="current-password"
+                      />
                     </div>
                     <Button type="submit" className="w-full gradient-primary text-primary-foreground font-semibold h-11" disabled={loading}>
                       {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
@@ -116,7 +119,9 @@ export default function LoginPage() {
               <TabsContent value="signup">
                 <form onSubmit={handleSignup}>
                   <CardContent className="space-y-4">
-                    <CardDescription className="text-center">Register as a new student trainee</CardDescription>
+                    <CardDescription className="text-center">
+                      Register a new student account — you'll complete your profile after signing in
+                    </CardDescription>
                     <div className="space-y-2">
                       <Label htmlFor="signup-name">Full Name</Label>
                       <Input id="signup-name" placeholder="John Kamau" value={signupName} onChange={e => setSignupName(e.target.value)} />

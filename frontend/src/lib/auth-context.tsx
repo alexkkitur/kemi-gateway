@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { api, setToken, getToken } from '@/lib/api';
+import { api, setToken, getToken, ApiError } from '@/lib/api';
 import type { AppRole } from '@/lib/types';
 
 export interface AppUser {
@@ -7,15 +7,19 @@ export interface AppUser {
   name: string;
   email: string;
   role: AppRole;
+  profile_complete: boolean;
+  tsc_number: string | null;
+  delm_number: string | null;
 }
 
 interface AuthContextType {
   user: AppUser | null;
-  supaUser: AppUser | null; // kept for backwards-compat with existing imports
+  supaUser: AppUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<string | null>;
+  login: (identifier: string, password: string) => Promise<string | null>;
   signup: (email: string, password: string, fullName: string) => Promise<string | null>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -25,18 +29,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchMe = async () => {
+    const u = await api<AppUser>('/auth/me');
+    setUser(u);
+  };
+
   useEffect(() => {
     if (!getToken()) { setLoading(false); return; }
-    api<AppUser>('/auth/me')
-      .then((u) => setUser(u))
-      .catch(() => setToken(null))
+    fetchMe()
+      .catch((e) => {
+        // Only clear token on explicit auth rejection — not network errors
+        if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {
+          setToken(null);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  const login = async (email: string, password: string): Promise<string | null> => {
+  const login = async (identifier: string, password: string): Promise<string | null> => {
     try {
       const { token, user } = await api<{ token: string; user: AppUser }>('/auth/login', {
-        body: { email, password },
+        body: { identifier, password },
       });
       setToken(token);
       setUser(user);
@@ -65,8 +78,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    if (!getToken()) return;
+    try { await fetchMe(); } catch (e) {
+      if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {
+        setToken(null);
+        setUser(null);
+      }
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, supaUser: user, loading, login, signup, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{
+      user, supaUser: user, loading, login, signup, logout, refreshUser,
+      isAuthenticated: !!user,
+    }}>
       {children}
     </AuthContext.Provider>
   );

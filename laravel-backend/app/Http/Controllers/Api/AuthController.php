@@ -9,7 +9,6 @@ use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -38,15 +37,37 @@ class AuthController extends Controller
         return $this->authPayload($user);
     }
 
+    /**
+     * Login accepts: email OR tsc_number OR delm_number + password.
+     */
     public function login(Request $r)
     {
-        $data = $r->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required'],
+        $r->validate([
+            'identifier' => ['required', 'string'],
+            'password'   => ['required'],
         ]);
 
-        $user = User::where('email', $data['email'])->first();
-        if (! $user || ! Hash::check($data['password'], $user->password)) {
+        $identifier = trim($r->input('identifier'));
+        $user = null;
+
+        // Try email first
+        if (str_contains($identifier, '@')) {
+            $user = User::where('email', $identifier)->first();
+        }
+
+        // Try TSC number via profile
+        if (! $user) {
+            $profile = Profile::where('tsc_number', $identifier)->first();
+            if ($profile) $user = User::find($profile->user_id);
+        }
+
+        // Try DELM number via profile
+        if (! $user) {
+            $profile = Profile::where('delm_number', $identifier)->first();
+            if ($profile) $user = User::find($profile->user_id);
+        }
+
+        if (! $user || ! Hash::check($r->input('password'), $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 422);
         }
 
@@ -76,11 +97,15 @@ class AuthController extends Controller
     private function shape(User $user): array
     {
         $user->load('profile');
+        $profile = $user->profile;
         return [
-            'id'    => $user->id,
-            'email' => $user->email,
-            'name'  => $user->profile->full_name ?? $user->email,
-            'role'  => $user->primaryRole() ?? 'student',
+            'id'               => $user->id,
+            'email'            => $user->email,
+            'name'             => $profile->full_name ?? $user->email,
+            'role'             => $user->primaryRole() ?? 'student',
+            'profile_complete' => $profile ? $profile->isComplete() : false,
+            'tsc_number'       => $profile->tsc_number ?? null,
+            'delm_number'      => $profile->delm_number ?? null,
         ];
     }
 }

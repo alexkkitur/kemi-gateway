@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { api, apiBaseUrl, getToken } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
-import type { Course, Application, Profile } from '@/lib/types';
+import type { Course, Application, Profile, FeeInvoice } from '@/lib/types';
 
 // ── Courses ──
 export function useCourses() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     api<Course[]>('/courses').then(setCourses).catch(() => setCourses([])).finally(() => setLoading(false));
   }, []);
-
   return { courses, loading };
 }
 
@@ -32,12 +30,8 @@ export function useMyApplications() {
   const refetch = async () => {
     if (!user) return;
     setLoading(true);
-    try {
-      const data = await api<ApplicationWithDetails[]>('/applications/me');
-      setApplications(data);
-    } finally {
-      setLoading(false);
-    }
+    try { setApplications(await api<ApplicationWithDetails[]>('/applications/me')); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { refetch(); }, [user]);
@@ -50,16 +44,46 @@ export function useAllApplications() {
 
   const refetch = async () => {
     setLoading(true);
-    try {
-      const data = await api<ApplicationWithDetails[]>('/applications');
-      setApplications(data);
-    } finally {
-      setLoading(false);
-    }
+    try { setApplications(await api<ApplicationWithDetails[]>('/applications')); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { refetch(); }, []);
   return { applications, loading, refetch };
+}
+
+// ── Fee Invoice ──
+export function useFeeInvoice(applicationId: string | null) {
+  const [invoice, setInvoice] = useState<FeeInvoice | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetch = async () => {
+    if (!applicationId) return;
+    setLoading(true);
+    try { setInvoice(await api<FeeInvoice>(`/applications/${applicationId}/fee-invoice`)); }
+    catch { setInvoice(null); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { fetch(); }, [applicationId]);
+  return { invoice, loading, refetch: fetch, setInvoice };
+}
+
+export async function calculateFeeInvoice(
+  applicationId: string,
+  units_registered: number,
+  has_transcript: boolean,
+  has_exam_card: boolean
+): Promise<{ data: FeeInvoice | null; error: string | null }> {
+  try {
+    const data = await api<FeeInvoice>(`/applications/${applicationId}/fee-invoice`, {
+      method: 'POST',
+      body: { units_registered, has_transcript, has_exam_card },
+    });
+    return { data, error: null };
+  } catch (e) {
+    return { data: null, error: e instanceof Error ? e.message : 'Failed' };
+  }
 }
 
 // ── Apply for course ──
@@ -85,26 +109,19 @@ export async function uploadPaymentProof(_studentId: string, applicationId: stri
   }
 }
 
-// ── Admin: verify payment ──
+// ── Admin actions ──
 export async function verifyPayment(applicationId: string, verified: boolean, _verifiedBy: string, reason?: string) {
   await api(`/applications/${applicationId}/verify-payment`, { body: { verified, reason } });
 }
-
-// ── Admin: approve/reject (DD/AEC) ──
 export async function approveApplication(applicationId: string, _approverId: string, approved: boolean, comment?: string) {
   await api(`/applications/${applicationId}/approve`, { body: { approved, comment } });
 }
-
-// ── Admin: authorize (DD/CD&T) ──
 export async function authorizeTraining(applicationId: string, _authorizerId: string, comment?: string) {
   await api(`/applications/${applicationId}/authorize`, { body: { comment } });
 }
-
-// ── Training lifecycle ──
 export async function markTrainingCompleted(applicationId: string, _adminId: string, _studentId: string, _courseId: string) {
   await api(`/applications/${applicationId}/complete-training`, { method: 'POST' });
 }
-
 export async function markGraduated(applicationId: string, _adminId: string) {
   await api(`/applications/${applicationId}/graduate`, { method: 'POST' });
 }
@@ -120,7 +137,6 @@ export async function issueCertificate(applicationId: string, studentId: string,
     return { data: null, error: { message: e instanceof Error ? e.message : 'Failed' } };
   }
 }
-
 export async function revokeCertificate(certId: string, _adminId: string, reason: string) {
   await api(`/certificates/${certId}/revoke`, { body: { reason } });
 }
@@ -128,13 +144,11 @@ export async function revokeCertificate(certId: string, _adminId: string, reason
 export function useGraduations() {
   const [graduations, setGraduations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   const refetch = async () => {
     setLoading(true);
     try { setGraduations(await api<any[]>('/graduations')); }
     finally { setLoading(false); }
   };
-
   useEffect(() => { refetch(); }, []);
   return { graduations, loading, refetch };
 }
@@ -142,13 +156,11 @@ export function useGraduations() {
 export function useCertificates() {
   const [certificates, setCertificates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   const refetch = async () => {
     setLoading(true);
     try { setCertificates(await api<any[]>('/certificates')); }
     finally { setLoading(false); }
   };
-
   useEffect(() => { refetch(); }, []);
   return { certificates, loading, refetch };
 }
@@ -157,15 +169,10 @@ export function useMyCertificates() {
   const { user } = useAuth();
   const [certificates, setCertificates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (!user) return;
-    api<any[]>('/certificates/me')
-      .then(setCertificates)
-      .catch(() => setCertificates([]))
-      .finally(() => setLoading(false));
+    api<any[]>('/certificates/me').then(setCertificates).catch(() => setCertificates([])).finally(() => setLoading(false));
   }, [user]);
-
   return { certificates, loading };
 }
 
@@ -173,26 +180,20 @@ export function useMyCertificates() {
 export function useAuditLogs() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   const refetch = async () => {
     setLoading(true);
     try { setLogs(await api<any[]>('/audit-logs')); }
     finally { setLoading(false); }
   };
-
   useEffect(() => { refetch(); }, []);
   return { logs, loading, refetch };
 }
-
-export async function logAuditAction() {
-  /* no-op: audit logging is performed server-side on each admin action */
-}
+export async function logAuditAction() { /* server-side */ }
 
 // ── Super Admin overrides ──
 export async function adminOverrideStatus(applicationId: string, newStatus: string, _adminId: string, reason: string) {
   await api(`/applications/${applicationId}/override-status`, { body: { status: newStatus, reason } });
 }
-
 export async function adminOverridePayment(applicationId: string, newStatus: string, _adminId: string, reason: string) {
   await api(`/applications/${applicationId}/override-payment`, { body: { status: newStatus, reason } });
 }
@@ -205,27 +206,23 @@ export function useProfile() {
 
   useEffect(() => {
     if (!user) return;
-    api<Profile>('/profile/me')
-      .then(setProfile)
-      .catch(() => setProfile(null))
-      .finally(() => setLoading(false));
+    api<Profile>('/profile/me').then(setProfile).catch(() => setProfile(null)).finally(() => setLoading(false));
   }, [user]);
 
-  const updateProfile = async (updates: Partial<Pick<Profile, 'full_name' | 'phone' | 'id_number'>>) => {
-    if (!user) return;
+  const updateProfile = async (updates: Partial<Profile>): Promise<null | { message: string }> => {
     try {
       const updated = await api<Profile>('/profile/me', { method: 'PATCH', body: updates });
       setProfile(updated);
       return null;
     } catch (e) {
-      return e instanceof Error ? { message: e.message } : { message: 'Failed' };
+      return { message: e instanceof Error ? e.message : 'Failed' };
     }
   };
 
   return { profile, loading, updateProfile };
 }
 
-// ── Helper for authenticated file downloads (admission letters / certificates) ──
+// ── Authenticated file download ──
 export async function downloadAuthedFile(path: string, filename: string) {
   const res = await fetch(`${apiBaseUrl}${path}`, {
     headers: { Authorization: `Bearer ${getToken() ?? ''}` },

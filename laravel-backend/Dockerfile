@@ -1,38 +1,43 @@
-FROM php:8.2-fpm
+FROM php:8.3-fpm
 
-# Install system dependencies and PHP extensions
+# Install comprehensive system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
     nginx
 
-# Clear cache
+# Clear apt cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions needed for Laravel & MySQL
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# Install all mandatory PHP extensions for Laravel 11 & MySQL
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd xml zip
 
-# Get latest Composer
+# Get the latest version of Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
+# Set the container working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents
+# Copy application files
 COPY . /var/www
 
-# Install composer dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Set proper directory ownership BEFORE running composer
+RUN chown -R www-data:www-data /var/www
 
-# Set permissions for Laravel storage
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Run composer installation safely as a production flag
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Setup Nginx configuration override
+# Finalise storage and cache permissions
+RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
+# Setup Nginx server block configuration
 RUN echo 'server { \n\
     listen 8080; \n\
     root /var/www/public; \n\
@@ -47,8 +52,6 @@ RUN echo 'server { \n\
     } \n\
 }' > /etc/nginx/sites-available/default
 
-# Expose port 8080 for Render
 EXPOSE 8080
 
-# Start Nginx & PHP-FPM together
 CMD php-fpm -D && nginx -g "daemon off;"

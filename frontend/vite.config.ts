@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     hmr: { overlay: false },
+    allowedHosts: ["://onrender.com"], // Bypasses the host blocking security screen on Render
     proxy: {
       "/api": {
         target: "http://localhost:8000",

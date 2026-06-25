@@ -62,9 +62,8 @@ RUN echo 'server { \n\
 
 EXPOSE 8080
 
-# 💡 RUNTIME FIX: Wipes stale local caches, automates migrations, sets SSL paths, and caches production configs
+# RUNTIME FIX: Clears local caches, triggers migrations via SSL, and launches Nginx
 CMD rm -f bootstrap/cache/config.php bootstrap/cache/packages.php && \
-    export MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt && \
     php artisan migrate --force && \
     php artisan config:cache && \
     php artisan route:cache && \

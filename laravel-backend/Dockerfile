@@ -59,5 +59,10 @@ RUN echo 'server { \n\
 
 EXPOSE 8080
 
-# 💡 RUN CLEAR CACHES AT LAUNCH INSTEAD OF BUILD TIME
-CMD php artisan config:clear && php artisan cache:clear && php artisan route:clear && php-fpm -D && nginx -g "daemon off;"
+# 💡 INLINE OPTIMIZATION: Clears local junk and forces production-only compiling
+CMD rm -f bootstrap/cache/config.php && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
+    php-fpm -D && \
+    nginx -g "daemon off;"

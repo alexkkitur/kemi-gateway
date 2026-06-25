@@ -39,11 +39,6 @@ RUN composer install \
     --no-scripts \
     --ignore-platform-reqs
 
-# Clear Laravel production framework caches automatically
-RUN php artisan config:clear
-RUN php artisan cache:clear
-RUN php artisan route:clear
-
 # Finalise folder execution privileges
 RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
@@ -64,4 +59,5 @@ RUN echo 'server { \n\
 
 EXPOSE 8080
 
-CMD php-fpm -D && nginx -g "daemon off;"
+# 💡 RUN CLEAR CACHES AT LAUNCH INSTEAD OF BUILD TIME
+CMD php artisan config:clear && php artisan cache:clear && php artisan route:clear && php-fpm -D && nginx -g "daemon off;"

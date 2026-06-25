@@ -5,7 +5,7 @@ import path from "path";
 export default defineConfig(({ mode }) => {
   // 💡 CHOOSE TARGET PATHWAY: Use your live Render url for production builds
   const apiTarget = mode === "production" 
-    ? "https://onrender.com" 
+    ? "https://kemi-gateway-1.onrender.com" 
     : "http://localhost:8000";
 
   return {

@@ -39,7 +39,12 @@ RUN composer install \
     --no-scripts \
     --ignore-platform-reqs
 
-# Finallise folder execution privileges
+# Clear Laravel production framework caches automatically
+RUN php artisan config:clear
+RUN php artisan cache:clear
+RUN php artisan route:clear
+
+# Finalise folder execution privileges
 RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Setup Nginx configuration

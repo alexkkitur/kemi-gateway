@@ -27,6 +27,9 @@ WORKDIR /var/www
 # Copy codebase
 COPY . /var/www
 
+# 💡 FIX: Ensure the views folder structure exists for headless APIs
+RUN mkdir -p /var/www/resources/views
+
 # Give permissions to www-data user
 RUN chown -R www-data:www-data /var/www
 
@@ -59,10 +62,9 @@ RUN echo 'server { \n\
 
 EXPOSE 8080
 
-# 💡 RUNTIME FIX: Wipes out the stale local package map and rebuilds clean configs
+# 💡 RUNTIME COMMAND: Clears layout cache files safely without forcing a missing view compile
 CMD rm -f bootstrap/cache/config.php bootstrap/cache/packages.php && \
     php artisan config:cache && \
     php artisan route:cache && \
-    php artisan view:cache && \
     php-fpm -D && \
     nginx -g "daemon off;"

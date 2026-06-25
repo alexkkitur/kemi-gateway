@@ -23,11 +23,19 @@ export default defineConfig(({ mode }) => ({
     minify: "esbuild",
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom", "react-router-dom"],
-          ui: ["@radix-ui/react-dialog", "@radix-ui/react-select", "@radix-ui/react-tabs"],
-          query: ["@tanstack/react-query"],
-          charts: ["recharts"],
+        manualChunks(id) {
+          if (id.includes("react") || id.includes("react-dom") || id.includes("react-router-dom")) {
+            return "vendor";
+          }
+          if (id.includes("@radix-ui")) {
+            return "ui";
+          }
+          if (id.includes("@tanstack")) {
+            return "query";
+          }
+          if (id.includes("recharts")) {
+            return "charts";
+          }
         },
       },
     },

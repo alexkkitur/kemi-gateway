@@ -1,6 +1,6 @@
 FROM php:8.3-fpm
 
-# Install comprehensive system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -15,29 +15,34 @@ RUN apt-get update && apt-get install -y \
 # Clear apt cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install all mandatory PHP extensions for Laravel 11 & MySQL
+# Install all PHP extensions required by Laravel 11
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd xml zip
 
-# Get the latest version of Composer
+# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set the container working directory
+# Set container working directory
 WORKDIR /var/www
 
-# Copy application files
+# Copy codebase
 COPY . /var/www
 
-# Set proper directory ownership BEFORE running composer
+# Give permissions to www-data user
 RUN chown -R www-data:www-data /var/www
 
-# Run composer installation safely as a production flag
+# Run composer installation ignoring local host version requirements
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-scripts \
+    --ignore-platform-reqs
 
-# Finalise storage and cache permissions
+# Finallise folder execution privileges
 RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Setup Nginx server block configuration
+# Setup Nginx configuration
 RUN echo 'server { \n\
     listen 8080; \n\
     root /var/www/public; \n\

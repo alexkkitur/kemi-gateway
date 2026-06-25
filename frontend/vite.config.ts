@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     hmr: { overlay: false },
-    allowedHosts: ["://onrender.com"], // Bypasses the host blocking security screen on Render
+    allowedHosts: true, // Forces Vite to accept traffic from any external domain or Render proxy URL
     proxy: {
       "/api": {
         target: "http://localhost:8000",

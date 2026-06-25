@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig(({ mode }) => {
-  // 💡 CHOOSE TARGET PATHWAY: Use your live Render url for production builds
+  // Keeps local development proxying intact to prevent local CORS blockers
   const apiTarget = mode === "production" 
     ? "https://kemi-gateway-1.onrender.com" 
     : "http://localhost:8000";

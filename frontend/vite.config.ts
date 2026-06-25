@@ -2,44 +2,52 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8081,
-    hmr: { overlay: false },
-    allowedHosts: true, // Forces Vite to accept traffic from any external domain or Render proxy URL
-    proxy: {
-      "/api": {
-        target: "http://localhost:8000",
-        changeOrigin: true,
-      },
-    },
-  },
-  plugins: [react()],
-  resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
-  },
-  build: {
-    target: "esnext",
-    minify: "esbuild",
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes("react") || id.includes("react-dom") || id.includes("react-router-dom")) {
-            return "vendor";
-          }
-          if (id.includes("@radix-ui")) {
-            return "ui";
-          }
-          if (id.includes("@tanstack")) {
-            return "query";
-          }
-          if (id.includes("recharts")) {
-            return "charts";
-          }
+export default defineConfig(({ mode }) => {
+  // 💡 CHOOSE TARGET PATHWAY: Use your live Render url for production builds
+  const apiTarget = mode === "production" 
+    ? "https://onrender.com" 
+    : "http://localhost:8000";
+
+  return {
+    server: {
+      host: "::",
+      port: 8081,
+      hmr: { overlay: false },
+      allowedHosts: true,
+      proxy: {
+        "/api": {
+          target: apiTarget,
+          changeOrigin: true,
+          secure: true,
         },
       },
     },
-    chunkSizeWarningLimit: 600,
-  },
-}));
+    plugins: [react()],
+    resolve: {
+      alias: { "@": path.resolve(__dirname, "./src") },
+    },
+    build: {
+      target: "esnext",
+      minify: "esbuild",
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("react") || id.includes("react-dom") || id.includes("react-router-dom")) {
+              return "vendor";
+            }
+            if (id.includes("@radix-ui")) {
+              return "ui";
+            }
+            if (id.includes("@tanstack")) {
+              return "query";
+            }
+            if (id.includes("recharts")) {
+              return "charts";
+            }
+          },
+        },
+      },
+      chunkSizeWarningLimit: 600,
+    },
+  };
+});

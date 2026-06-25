@@ -17,6 +17,7 @@ import ProfilePage from "./pages/student/ProfilePage";
 import StudentCertificatesPage from "./pages/student/StudentCertificatesPage";
 import FeesPage from "./pages/student/FeesPage";
 import TranscriptsPage from "./pages/student/TranscriptsPage";
+import ExamCardPage from "./pages/student/ExamCardPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ApproverDashboard from "./pages/admin/ApproverDashboard";
 import AuthorizerDashboard from "./pages/admin/AuthorizerDashboard";
@@ -74,6 +75,7 @@ function AppRoutes() {
       <Route path="/student/courses"       element={<RouteGuard allowedRoles={['student']}><CoursesPage /></RouteGuard>} />
       <Route path="/student/applications"  element={<RouteGuard allowedRoles={['student']}><ApplicationsPage /></RouteGuard>} />
       <Route path="/student/fees"          element={<RouteGuard allowedRoles={['student']}><FeesPage /></RouteGuard>} />
+      <Route path="/student/exam-card"      element={<RouteGuard allowedRoles={['student']}><ExamCardPage /></RouteGuard>} />
       <Route path="/student/transcripts"   element={<RouteGuard allowedRoles={['student']}><TranscriptsPage /></RouteGuard>} />
       <Route path="/student/documents"     element={<RouteGuard allowedRoles={['student']}><DocumentsPage /></RouteGuard>} />
       <Route path="/student/certificates"  element={<RouteGuard allowedRoles={['student']}><StudentCertificatesPage /></RouteGuard>} />

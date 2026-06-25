@@ -28,6 +28,7 @@ const studentNav = [
   { title: 'Available Courses',url: '/student/courses',      icon: BookOpen },
   { title: 'My Applications',  url: '/student/applications', icon: FileText },
   { title: 'Fees & Payments',  url: '/student/fees',         icon: CreditCard },
+  { title: 'Exam Card',        url: '/student/exam-card',    icon: ClipboardList },
   { title: 'Transcripts',      url: '/student/transcripts',  icon: ScrollText },
   { title: 'Documents',        url: '/student/documents',    icon: Upload },
   { title: 'Certificates',     url: '/student/certificates', icon: Award },

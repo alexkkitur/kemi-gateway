@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Shield body -->
+  <path d="M32 3 L60 14 L60 36 C60 51 47 61 32 63 C17 61 4 51 4 36 L4 14 Z" fill="#0B5ED7"/>
+  <!-- Shield inner lighter layer -->
+  <path d="M32 9 L54 18 L54 36 C54 48 43 56 32 59 C21 56 10 48 10 36 L10 18 Z" fill="#1565C0"/>
+  <!-- White K lettermark -->
+  <line x1="22" y1="18" x2="22" y2="46" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="22" y1="32" x2="42" y2="18" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="22" y1="32" x2="42" y2="46" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+</svg>

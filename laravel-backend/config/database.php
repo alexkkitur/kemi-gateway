@@ -1,7 +1,6 @@
         'mysql' => [
             'driver' => 'mysql',
-            // 💡 HARDCODED PROTECTION: Bypasses hidden .env overrides on Render
-            'host' => env('DB_HOST', '://aivencloud.com'),
+            'host' => env('DB_HOST', 'mysql-20c016ac-al-2d1d.h.aivencloud.com'),
             'port' => env('DB_PORT', '22205'),
             'database' => env('DB_DATABASE', 'defaultdb'),
             'username' => env('DB_USERNAME', 'avnadmin'),

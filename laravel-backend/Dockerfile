@@ -59,8 +59,8 @@ RUN echo 'server { \n\
 
 EXPOSE 8080
 
-# 💡 INLINE OPTIMIZATION: Clears local junk and forces production-only compiling
-CMD rm -f bootstrap/cache/config.php && \
+# 💡 RUNTIME FIX: Wipes out the stale local package map and rebuilds clean configs
+CMD rm -f bootstrap/cache/config.php bootstrap/cache/packages.php && \
     php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \

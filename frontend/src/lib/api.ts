@@ -1,13 +1,14 @@
 // Thin fetch wrapper for the Laravel API.
 //
-// Configure base URL via VITE_API_URL (e.g. http://localhost:8080/api).
+// Cross-origin setup: Directs requests directly to the live Render backend.
 
-const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'http://localhost:8080/api';
+const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'https://kemi-gateway-1.onrender.com';
 const TOKEN_KEY = 'kemi_auth_token';
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
+
 export function setToken(token: string | null) {
   if (token) localStorage.setItem(TOKEN_KEY, token);
   else localStorage.removeItem(TOKEN_KEY);
@@ -43,7 +44,14 @@ export async function api<T = unknown>(path: string, opts: Options = {}): Promis
     body = JSON.stringify(opts.body);
   }
 
-  const res = await fetch(`${BASE}${path.startsWith('/') ? path : `/${path}`}`, {
+  // Ensures paths without leading slashes map cleanly (e.g. /api/auth/login)
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  
+  // Explicitly handles appending the backend prefix if your path parameters omit it
+  const urlPath = cleanPath.startsWith('/api') ? cleanPath : `/api${cleanPath}`;
+  const targetUrl = `${BASE}${urlPath}`;
+
+  const res = await fetch(targetUrl, {
     method: opts.method ?? (body ? 'POST' : 'GET'),
     headers,
     body,
@@ -62,4 +70,4 @@ export async function api<T = unknown>(path: string, opts: Options = {}): Promis
   return payload as T;
 }
 
-export const apiBaseUrl = BASE;
+export const apiBaseUrl = BASE; 

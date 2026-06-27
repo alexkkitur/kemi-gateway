@@ -4,9 +4,9 @@ import path from "path";
 
 export default defineConfig(({ mode }) => {
   // Keeps local development proxying intact to prevent local CORS blockers
-  const apiTarget = mode === "production" 
-    ? "https://kemi-gateway-1.onrender.com" 
-    : "http://localhost:8000";
+  const apiTarget = mode === "production"
+    ? "https://soppingly-componential-elia.ngrok-free.dev"
+    : "https://soppingly-componential-elia.ngrok-free.dev";
 
   return {
     server: {

@@ -2,7 +2,7 @@
 //
 // Cross-origin setup: Directs requests directly to the live Render backend.
 
-const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'https://kemi-gateway-1.onrender.com';
+const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'https://soppingly-componential-elia.ngrok-free.dev/api';
 const TOKEN_KEY = 'kemi_auth_token';
 
 export function getToken(): string | null {
@@ -44,11 +44,10 @@ export async function api<T = unknown>(path: string, opts: Options = {}): Promis
     body = JSON.stringify(opts.body);
   }
 
-  // Ensures paths without leading slashes map cleanly (e.g. /api/auth/login)
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  
-  // Explicitly handles appending the backend prefix if your path parameters omit it
-  const urlPath = cleanPath.startsWith('/api') ? cleanPath : `/api${cleanPath}`;
+  // If BASE already ends with /api, don't double-prefix
+  const baseHasApi = /\/api$/.test(BASE);
+  const urlPath = baseHasApi || cleanPath.startsWith('/api') ? cleanPath : `/api${cleanPath}`;
   const targetUrl = `${BASE}${urlPath}`;
 
   const res = await fetch(targetUrl, {

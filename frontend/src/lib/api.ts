@@ -2,7 +2,9 @@
 //
 // Cross-origin setup: Directs requests directly to the live Render backend.
 
-const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'https://soppingly-componential-elia.ngrok-free.dev/api';
+// Normalize: strip trailing slash AND trailing /api so we can always re-add exactly one /api below.
+const RAW_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'https://soppingly-componential-elia.ngrok-free.dev/api';
+const BASE = RAW_BASE.replace(/\/api$/, '');
 const TOKEN_KEY = 'kemi_auth_token';
 
 export function getToken(): string | null {

@@ -47,10 +47,9 @@ export async function api<T = unknown>(path: string, opts: Options = {}): Promis
   }
 
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  // If BASE already ends with /api, don't double-prefix
-  const baseHasApi = /\/api$/.test(BASE);
-  const urlPath = baseHasApi || cleanPath.startsWith('/api') ? cleanPath : `/api${cleanPath}`;
-  const targetUrl = `${BASE}${urlPath}`;
+  // Strip any leading /api from caller path; we re-add exactly one below.
+  const pathNoApi = cleanPath.replace(/^\/api(?=\/|$)/, '') || '/';
+  const targetUrl = `${BASE}/api${pathNoApi === '/' ? '' : pathNoApi}`;
 
   const res = await fetch(targetUrl, {
     method: opts.method ?? (body ? 'POST' : 'GET'),

@@ -33,6 +33,10 @@ export async function api<T = unknown>(path: string, opts: Options = {}): Promis
     Accept: 'application/json',
     ...(opts.headers ?? {}),
   };
+  // If we're talking to an ngrok URL, send the header to skip ngrok's browser warning page
+  if (BASE.includes('ngrok-free.dev')) {
+    headers['ngrok-skip-browser-warning'] = '1';
+  }
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 

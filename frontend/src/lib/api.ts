@@ -2,7 +2,9 @@
 //
 // Cross-origin setup: Directs requests directly to the live Render backend.
 
-const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'https://soppingly-componential-elia.ngrok-free.dev/api';
+// Normalize: strip trailing slash AND trailing /api so we can always re-add exactly one /api below.
+const RAW_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'https://soppingly-componential-elia.ngrok-free.dev/api';
+const BASE = RAW_BASE.replace(/\/api$/, '');
 const TOKEN_KEY = 'kemi_auth_token';
 
 export function getToken(): string | null {
@@ -49,10 +51,9 @@ export async function api<T = unknown>(path: string, opts: Options = {}): Promis
   }
 
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  // If BASE already ends with /api, don't double-prefix
-  const baseHasApi = /\/api$/.test(BASE);
-  const urlPath = baseHasApi || cleanPath.startsWith('/api') ? cleanPath : `/api${cleanPath}`;
-  const targetUrl = `${BASE}${urlPath}`;
+  // Strip any leading /api from caller path; we re-add exactly one below.
+  const pathNoApi = cleanPath.replace(/^\/api(?=\/|$)/, '') || '/';
+  const targetUrl = `${BASE}/api${pathNoApi === '/' ? '' : pathNoApi}`;
 
   const res = await fetch(targetUrl, {
     method: opts.method ?? (body ? 'POST' : 'GET'),
